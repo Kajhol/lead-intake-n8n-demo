@@ -1,0 +1,442 @@
+{
+  "name": "Człowiek w pętli",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "airtableTokenApi",
+        "baseId": {
+          "__rl": true,
+          "value": "appyYJrKSh2myojgC",
+          "mode": "id"
+        },
+        "tableId": {
+          "__rl": true,
+          "value": "tblSMz6kxTntSAAEs",
+          "mode": "id"
+        },
+        "triggerField": "Created",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        16
+      ],
+      "id": "8e843595-a569-4c90-94a3-3f5bceef71d7",
+      "name": "Airtable Trigger",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "yyw2DZeoSkhqSAGC",
+          "name": "Człowiek w pętli"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Nowy potencjalny klient\n\nImie i nazwisko:{{ $json.fields['Imię i nazwisko'] }}\n\nEmail:{{ $json.fields.Email }}\n\nNumer telefonu:{{ $json.fields['Numer Telefonu'] }}\n\nNazwa firmy: {{ $json.fields.nazwaFirmy }}\n\nIntencja:{{ $json.fields.Intencja }}\n\nBudżet: {{ $json.fields['Budżet'] }}\n\nOpis projektu: {{ $json.fields.opisProjektu }}\n\nHarmonogram: {{ $json.fields.Harmonogram }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Rola\nJesteś ekspertem ds. sprzedaży w agencji dostarczającej rozwiązania AI. Twoim zadaniem jest odpowiadanie na napływające leady, profesjonalnie odpowiadając na ich potrzeby. Otrzymasz informacje takie jak opis projektu i harmonogram, a Twoim celem jest przekonanie ich, że jesteśmy najlepszą agencją AI na rynku.\nNarzędzia\n\nProjekty - tabela w bazie danych - używaj tego narzędzia do przeszukiwania wcześniej zrealizowanych projektów.\n\nZasady\nOtrzymasz informacje o leadzie i musisz stworzyć zwięzły, profesjonalny e-mail.\n\nTwój główny cel to przekonanie leada do umówienia się na drugą rozmowę. Spraw, by uwierzył, że możemy zrealizować jego projekt i przekroczyć oczekiwania.\n\nWyszukaj informacje o odpowiednich wcześniejszych projektach, aby przedstawić je jako dowód naszych kompetencji. Wspomnij o rezultacie, jaki pomogliśmy osiągnąć klientowi.\n\nDołącz link do umówienia rozmowy: LINK\n\nPodpis e-mail\nPodpisuj e-maile jako:\nZespół XYZ\nHere is the current date/time: {{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -160,
+        16
+      ],
+      "id": "0d1b2095-2620-49b1-9e63-0f7897ed9da8",
+      "name": "Agent sprzedaży"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        464
+      ],
+      "id": "69380b34-8a42-4ba3-8a83-41eadd18c3e1",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "rqI54Erl2E2LOYJh",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appyYJrKSh2myojgC",
+          "mode": "list",
+          "cachedResultName": "Człowiek w pętli",
+          "cachedResultUrl": "https://airtable.com/appyYJrKSh2myojgC"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblUZ51DL9L3Z6W57",
+          "mode": "list",
+          "cachedResultName": "Projekty",
+          "cachedResultUrl": "https://airtable.com/appyYJrKSh2myojgC/tblUZ51DL9L3Z6W57"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        224
+      ],
+      "id": "893c719c-1562-4047-bce8-f2166f10d064",
+      "name": "Projekty - tabela w bazie danych",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "yyw2DZeoSkhqSAGC",
+          "name": "Człowiek w pętli"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2574cc59-05fd-4b3b-b8b7-a2ec7dce7151",
+              "name": "email",
+              "value": "={{ $json.output.properties.email.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        16
+      ],
+      "id": "4776b883-2159-4f2d-8cca-bc80dd5b593f",
+      "name": "Ustaw maila"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"subject\": {\n      \"type\": \"string\",\n      \"description\": \"The subcject line of the email\"\n    },\n    \"email\": {\n      \"type\": \"string\",\n      \"description\": \"The ody content of the email\"\n    }\n  },\n  \"required\": [\"subject\", \"email\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        432
+      ],
+      "id": "a928a53d-819f-478e-9ef9-5387f19ca0af",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "sendTo": "testowynosiemn@gmail.com",
+        "subject": "=WYMAGANA AKCEPTACJA DLA POTENCJALNEGO NOWEGO KLIENTA\n{{ $('Airtable Trigger').item.json.fields['Imię i nazwisko'] }}",
+        "message": "= {{ $('Airtable Trigger').item.json.fields['Imię i nazwisko'] }}  z firmy {{ $('Airtable Trigger').item.json.fields.nazwaFirmy }} szuka {{ $('Airtable Trigger').item.json.fields.Intencja }} ich budżet {{ $('Airtable Trigger').item.json.fields['Budżet'] }} z harmonogramem {{ $('Airtable Trigger').item.json.fields.Harmonogram }}\n\nProszę zatwierdzić lub odrzucić wysłanie tej wiadomości wygenerowanej przez Agenta AI\n\nTemat: {{ $('Agent sprzedaży').item.json.output.properties.subject.description }}\n\nEmail: {{ $('Agent sprzedaży').item.json.output.properties.email.description }}",
+        "responseType": "freeText",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        16
+      ],
+      "id": "573ad388-b615-4dab-a1ea-40dca9404df2",
+      "name": "Poproś o opinię",
+      "webhookId": "8362e8c1-8698-404e-8458-8e544ea5efba",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "lQTDiKQOa4rde3aK",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        608,
+        176
+      ],
+      "id": "b631fc21-726e-488a-8709-59f8662c6a5a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ykUg4igaCRRc9EJk",
+          "name": "Człowiek w pętli"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Email: {{ $('Ustaw maila').item.json.email }}\n\nFeedback: {{ $('Poproś o opinię').item.json.data.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Rola:\nJesteś ekspertem w pisaniu maili. Twoim zadaniem jest wziąć otrzymanego e-maila i poprawić go na podstawie opinii przesłanej przez osobę\n\nZasady:\nPodpisuj emaile jako: Zespół XYZ\nOto aktualna data/godzin: {{ $now }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        992,
+        112
+      ],
+      "id": "3030e244-c04e-4248-9e78-521b3f6073c8",
+      "name": "Agent korekty"
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.data.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Zatwierdzone",
+              "description": "=Email został przejrzany i zaakceptowany w obecnej formie. Człowiek wyraża wprost lub pośrednio akceptację, wskazując, że nie są potrzebne żadne zmiany. Przykładowe sformułowania: \"Wygląda dobrze\", \"Możesz wysłać\", \"To mi pasuje\", \"Zatwierdzone\", \"Nie są potrzebne zmiany\""
+            },
+            {
+              "category": "Odrzucone",
+              "description": "=E-mail został przejrzany, ale człowiek prosi o wprowadzenie zmian przed wysłaniem, takich jak poprawki, usunięcie fragmentów, przeredagowanie itp. Może to obejmować sugerowane edycje, zmianę sformułowań lub większe przeróbki. \n\nPrzykładowe sformułowania: „Czy możemy poprawić tę część?”, „Wymaga kilku zmian.”, „Chciałbym to przeredagować.”, „To nie do końca to – poprawmy to.”, „Możesz to dostosować przed wysłaniem?”. Nie wspominaj, że nie możemy tego zrobić."
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        608,
+        16
+      ],
+      "id": "d146141e-a3b6-4498-bb99-ce7655432ed6",
+      "name": "Sprawdz feedback"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Airtable Trigger').item.json.fields.Email }}",
+        "subject": "={{ $('Agent sprzedaży').item.json.output.properties.subject.description }}",
+        "emailType": "text",
+        "message": "={{ $('Ustaw maila').item.json.email }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        976,
+        -208
+      ],
+      "id": "edaa89f2-4aab-4629-9fc3-4a4b817f3ac2",
+      "name": "Wyślij maila",
+      "webhookId": "7f325c93-fb97-4c45-aa3a-04025df39fb8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "lQTDiKQOa4rde3aK",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "\n\n## Agent sprzedaży\n",
+        "height": 560,
+        "width": 752,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        -192
+      ],
+      "typeVersion": 1,
+      "id": "204bd08c-3568-43bb-8a58-5b5dc55155b2",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "\n## Agent korekty jeżeli człowiekowi coś nie pasuje\n\n",
+        "height": 304,
+        "width": 432
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        944,
+        -32
+      ],
+      "typeVersion": 1,
+      "id": "2e3127f6-ef1a-4178-898f-564906de83f3",
+      "name": "Sticky Note1"
+    }
+  ],
+  "connections": {
+    "Airtable Trigger": {
+      "main": [
+        [
+          {
+            "node": "Agent sprzedaży",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agent sprzedaży",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Agent korekty",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Projekty - tabela w bazie danych": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agent sprzedaży",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent sprzedaży": {
+      "main": [
+        [
+          {
+            "node": "Ustaw maila",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agent sprzedaży",
+            "type": "ai_outputParser",
+            "index": 0
+          },
+          {
+            "node": "Agent korekty",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ustaw maila": {
+      "main": [
+        [
+          {
+            "node": "Poproś o opinię",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poproś o opinię": {
+      "main": [
+        [
+          {
+            "node": "Sprawdz feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Sprawdz feedback",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sprawdz feedback": {
+      "main": [
+        [
+          {
+            "node": "Wyślij maila",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Agent korekty",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent korekty": {
+      "main": [
+        [
+          {
+            "node": "Ustaw maila",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
+}
